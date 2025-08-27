@@ -1,0 +1,48 @@
+server:
+  port: 9001
+  address: 0.0.0.0
+  servlet:
+    context-path: ""
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: perfume
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/flexfume?zeroDateTimeBehavior=convertToNull}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl:
+        auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+aws:
+  s3:
+    bucket:
+      name: ${AWS_S3_BUCKET_NAME:flexfume-s3}
+    access:
+      key: ${AWS_ACCESS_KEY:}
+    secret:
+      key: ${AWS_SECRET_KEY:}
+
+otp:
+  sms:
+    url: ${SMS_URL:http://bulksmsbd.net/api/smsapi}
+    apiKey: ${SMS_API_KEY:}
+    senderId: ${SMS_SENDER_ID:}
+
