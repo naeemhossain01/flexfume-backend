@@ -54,6 +54,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/user/reset-password-request").permitAll()
                         .requestMatchers("/api/v1/user/reset-password").permitAll()
                         .requestMatchers("/api/v1/checkout/verify-otp").permitAll()
+                        .requestMatchers("/api/v1/system/wake-up").permitAll()
+                        .requestMatchers("/api/v1/system/ping").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated())
