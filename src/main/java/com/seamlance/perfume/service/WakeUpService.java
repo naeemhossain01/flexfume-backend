@@ -1,6 +1,7 @@
 package com.seamlance.perfume.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,8 @@ public class WakeUpService {
     @Autowired
     private DataSource dataSource;
 
-    @Autowired
+    @Autowired(required = false)
+    @Qualifier("redisObjectTemplate")
     private RedisTemplate<String, Object> redisTemplate;
 
     public Map<String, Object> performWakeUpChecks() {
@@ -44,7 +46,9 @@ public class WakeUpService {
         
         // Overall status
         boolean allHealthy = checks.values().stream()
-            .allMatch(check -> check instanceof Map && "UP".equals(((Map<?, ?>) check).get("status")));
+            .allMatch(check -> check instanceof Map && 
+                ("UP".equals(((Map<?, ?>) check).get("status")) || 
+                 "SKIP".equals(((Map<?, ?>) check).get("status"))));
         
         response.put("status", allHealthy ? "UP" : "PARTIAL");
         response.put("wakeUpTime", System.currentTimeMillis());
@@ -83,6 +87,13 @@ public class WakeUpService {
     private Map<String, Object> checkRedis() {
         Map<String, Object> result = new HashMap<>();
         long startTime = System.currentTimeMillis();
+        
+        if (redisTemplate == null) {
+            result.put("status", "SKIP");
+            result.put("message", "Redis not configured or unavailable");
+            result.put("responseTimeMs", 0);
+            return result;
+        }
         
         try {
             // Test Redis connection with a simple ping
