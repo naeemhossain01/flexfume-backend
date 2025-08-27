@@ -1,0 +1,55 @@
+services:
+  - type: web
+    name: flexfume-ecom-backend
+    env: java
+    region: oregon # or singapore, frankfurt, etc.
+    plan: starter # or standard, pro, etc.
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -jar target/perfume-0.0.1-SNAPSHOT.jar"
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: JAVA_OPTS
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+      - key: SERVER_PORT
+        value: 10000
+      - key: DB_URL
+        fromService:
+          type: pserv
+          name: flexfume-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromService:
+          type: pserv
+          name: flexfume-db
+          property: user
+      - key: DB_PASSWORD
+        fromService:
+          type: pserv
+          name: flexfume-db
+          property: password
+      # Add other environment variables manually in Render dashboard
+      - key: REDIS_HOST
+        value: # Set in Render dashboard
+      - key: REDIS_PORT
+        value: # Set in Render dashboard  
+      - key: REDIS_PASSWORD
+        value: # Set in Render dashboard
+      - key: AWS_S3_BUCKET_NAME
+        value: # Set in Render dashboard
+      - key: AWS_ACCESS_KEY
+        value: # Set in Render dashboard
+      - key: AWS_SECRET_KEY
+        value: # Set in Render dashboard
+      - key: SMS_URL
+        value: # Set in Render dashboard
+      - key: SMS_API_KEY
+        value: # Set in Render dashboard
+      - key: SMS_SENDER_ID
+        value: # Set in Render dashboard
+
+databases:
+  - name: flexfume-db
+    databaseName: flexfume
+    user: flexfume_user
+    region: oregon # same as your web service
+    plan: starter # or standard, pro, etc.

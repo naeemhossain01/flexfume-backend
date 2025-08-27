@@ -1,0 +1,43 @@
+# Ignore Git
+.git
+.gitignore
+
+# Ignore Docker files
+Dockerfile
+.dockerignore
+
+# Ignore documentation
+README.md
+HELP.md
+
+# Ignore build artifacts
+target/
+!target/perfume-0.0.1-SNAPSHOT.jar
+
+# Ignore IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local
+
+# Ignore test files
+src/test/
+
+# Ignore Maven wrapper jar (we copy it explicitly)
+!.mvn/wrapper/maven-wrapper.jar
