@@ -1,0 +1,466 @@
+{
+	"info": {
+		"_postman_id": "affiliate-apis-collection",
+		"name": "FlexFume - Affiliate APIs",
+		"description": "API endpoints for affiliate submission management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Submit Affiliate Application",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});",
+							"",
+							"pm.test('Response contains affiliate ID and status', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.response).to.have.property('id');",
+							"    pm.expect(jsonData.response).to.have.property('status');",
+							"    pm.expect(jsonData.response).to.have.property('submittedAt');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"about\": \"Fashion influencer with 50k followers on Instagram. I specialize in lifestyle and fashion content and have worked with several brands in the past.\",\n  \"phone\": \"+1234567890\",\n  \"instagram\": \"@johndoe\",\n  \"facebook\": \"JohnDoeOfficial\",\n  \"youtube\": \"JohnDoeChannel\",\n  \"linkedin\": \"@johndoe\",\n  \"otherSocial\": \"@johndoe_tiktok\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/submit",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "submit"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Affiliate Applications (Admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/applications?page=1&limit=10",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "applications"],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						},
+						{
+							"key": "status",
+							"value": "PENDING",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Affiliate Application by ID (Admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/applications/{{affiliate_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "applications", "{{affiliate_id}}"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Affiliate Status (Admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"APPROVED\",\n  \"notes\": \"Great profile and engagement. Approved for affiliate program.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/applications/{{affiliate_id}}/status",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "applications", "{{affiliate_id}}", "status"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Affiliate Application (Admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/applications/{{affiliate_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "applications", "{{affiliate_id}}"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Validation - Missing Required Fields",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates error', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"\",\n  \"about\": \"\",\n  \"instagram\": \"@test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/submit",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "submit"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Validation - No Social Media",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates no social media error', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.true;",
+							"    pm.expect(jsonData.message).to.include('social media');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"about\": \"Test description\",\n  \"instagram\": \"\",\n  \"facebook\": \"\",\n  \"youtube\": \"\",\n  \"linkedin\": \"\",\n  \"otherSocial\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/submit",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "submit"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Phone Field - Valid Format",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});",
+							"",
+							"pm.test('Response contains affiliate ID and status', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.response).to.have.property('id');",
+							"    pm.expect(jsonData.response).to.have.property('status');",
+							"    pm.expect(jsonData.response).to.have.property('submittedAt');",
+							"    ",
+							"    // Store affiliate ID for use in other tests",
+							"    pm.collectionVariables.set('affiliate_id', jsonData.response.id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Jane Smith\",\n  \"about\": \"Tech blogger with 30k followers. I review gadgets and tech products.\",\n  \"phone\": \"+8801712345678\",\n  \"instagram\": \"@janesmith\",\n  \"youtube\": \"JaneSmithTech\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/submit",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "submit"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Phone Field - Optional Field",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200 (phone field optional)', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response indicates success without phone', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Bob Wilson\",\n  \"about\": \"Fitness influencer with 25k followers. I share workout routines and nutrition tips.\",\n  \"instagram\": \"@bobfitness\",\n  \"facebook\": \"BobWilsonFitness\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/affiliate/submit",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "affiliate", "submit"]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "your_admin_jwt_token_here",
+			"type": "string"
+		},
+		{
+			"key": "affiliate_id",
+			"value": "affiliate_submission_id_here",
+			"type": "string"
+		}
+	]
+}

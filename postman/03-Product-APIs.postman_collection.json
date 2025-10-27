@@ -1,0 +1,325 @@
+{
+	"info": {
+		"_postman_id": "product-apis-collection",
+		"name": "FlexFume - Product APIs",
+		"description": "Product management including CRUD operations, search, and image uploads",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Get All Products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/all",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"all"
+					]
+				},
+				"description": "Retrieve all products"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get Product By ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('product_id', jsonData.response.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/get/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"get",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{product_id}}",
+							"description": "Product ID"
+						}
+					]
+				},
+				"description": "Get product details by ID"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Get Products By Category",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/get-by-category/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"get-by-category",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{category_id}}",
+							"description": "Category ID"
+						}
+					]
+				},
+				"description": "Get all products in a specific category"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Search Products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/search?value=perfume",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"search"
+					],
+					"query": [
+						{
+							"key": "value",
+							"value": "perfume",
+							"description": "Search term"
+						}
+					]
+				},
+				"description": "Search products by name or description"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Create Product (Admin Only)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('product_id', jsonData.response.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Premium Solid Perfume\",\n    \"code\": \"premium-solid\",\n    \"description\": \"A premium solid perfume with long-lasting fragrance\",\n    \"price\": 1490.00,\n    \"categoryId\": \"{{category_id}}\",\n    \"stock\": 100,\n    \"imageUrl\": \"https://example.com/images/premium-perfume.jpg\",\n    \"keyFeatures\": [\n        \"Long-lasting 8-12 hours\",\n        \"Premium Quality Ingredients\",\n        \"Solid Perfume Format\",\n        \"Perfect for Active Lifestyle\",\n        \"Elegant Packaging\",\n        \"Cruelty-Free Formula\"\n    ],\n    \"whyChooseBenefits\": [\n        \"Portable & Travel-Friendly\",\n        \"No Spillage or Breakage\",\n        \"Easy Application\",\n        \"Concentrated Formula\",\n        \"Eco-Friendly Packaging\",\n        \"Professional Grade\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/add",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"add"
+					]
+				},
+				"description": "Create a new product (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Update Product (Admin Only)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Updated Premium Solid Perfume\",\n    \"code\": \"premium-solid-v2\",\n    \"description\": \"Premium fragrance with extra long-lasting scent\",\n    \"price\": 1690.00,\n    \"categoryId\": \"{{category_id}}\",\n    \"stock\": 85,\n    \"imageUrl\": \"https://example.com/images/premium-perfume-updated.jpg\",\n    \"keyFeatures\": [\n        \"Extended Long-lasting 12-16 hours\",\n        \"Premium Quality Ingredients\",\n        \"Solid Perfume Format\",\n        \"Perfect for Active Lifestyle\",\n        \"Luxury Packaging\"\n    ],\n    \"whyChooseBenefits\": [\n        \"Ultra Portable & Travel-Friendly\",\n        \"No Spillage or Breakage\",\n        \"Easy Application\",\n        \"Highly Concentrated Formula\",\n        \"Premium Eco-Friendly Packaging\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/update/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"update",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{product_id}}",
+							"description": "Product ID"
+						}
+					]
+				},
+				"description": "Update product details (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Upload Product Image (Admin Only)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": [],
+							"description": "Product image file"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/upload-image/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"upload-image",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{product_id}}",
+							"description": "Product ID"
+						}
+					]
+				},
+				"description": "Upload product image to S3 (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "8. Delete Product (Admin Only)",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/product/delete/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"product",
+						"delete",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{product_id}}",
+							"description": "Product ID"
+						}
+					]
+				},
+				"description": "Delete a product (Admin only)"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

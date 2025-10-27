@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "delivery-cost-apis-collection",
+		"name": "FlexFume - Delivery Cost APIs",
+		"description": "Delivery cost management including CRUD operations and location-based queries",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Get All Delivery Costs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/delivery-cost/all",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delivery-cost",
+						"all"
+					]
+				},
+				"description": "Retrieve all delivery cost configurations"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get Delivery Cost By Location",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/delivery-cost/location?location=Dhaka City",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delivery-cost",
+						"location"
+					],
+					"query": [
+						{
+							"key": "location",
+							"value": "Dhaka City",
+							"description": "Location name"
+						}
+					]
+				},
+				"description": "Get delivery costs for a specific location"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Get Delivery Cost By ID (Admin Only)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('delivery_cost_id', jsonData.response.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/delivery-cost/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delivery-cost",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{delivery_cost_id}}",
+							"description": "Delivery Cost ID"
+						}
+					]
+				},
+				"description": "Get delivery cost details by ID (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Add Delivery Cost (Admin Only)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('delivery_cost_id', jsonData.response.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"location\": \"Dhaka City\",\n    \"service\": \"Standard Delivery\",\n    \"cost\": 60\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/delivery-cost",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delivery-cost"
+					]
+				},
+				"description": "Add a new delivery cost configuration (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Add Express Delivery Cost (Admin Only)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"location\": \"Other Cities\",\n    \"service\": \"Standard Delivery\",\n    \"cost\": 150\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/delivery-cost",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delivery-cost"
+					]
+				},
+				"description": "Add express delivery cost (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Update Delivery Cost (Admin Only)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"location\": \"Dhaka City\",\n    \"service\": \"Standard Delivery\",\n    \"cost\": 70\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/delivery-cost/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delivery-cost",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{delivery_cost_id}}",
+							"description": "Delivery Cost ID"
+						}
+					]
+				},
+				"description": "Update delivery cost configuration (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Delete Delivery Cost (Admin Only)",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/delivery-cost/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delivery-cost",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{delivery_cost_id}}",
+							"description": "Delivery Cost ID"
+						}
+					]
+				},
+				"description": "Delete a delivery cost configuration (Admin only)"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

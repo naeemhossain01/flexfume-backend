@@ -1,0 +1,249 @@
+{
+	"info": {
+		"_postman_id": "discount-apis-collection",
+		"name": "FlexFume - Discount APIs",
+		"description": "Product discount management including CRUD operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Get All Discounts (Admin Only)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/discount",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"discount"
+					]
+				},
+				"description": "Retrieve all product discounts (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Add Discounts (Admin Only)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.length > 0) {",
+							"        pm.environment.set('discount_id', jsonData.response[0].id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"productId\": \"{{product_id}}\",\n        \"discountPercentage\": 33\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/discount",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"discount"
+					]
+				},
+				"description": "Add discounts to products (Admin only). Accepts an array of discount objects."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Add Multiple Discounts (Admin Only)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"productId\": \"product-id-1\",\n        \"discountPercentage\": 20\n    },\n    {\n        \"productId\": \"product-id-2\",\n        \"discountPercentage\": 15\n    },\n    {\n        \"productId\": \"product-id-3\",\n        \"discountPercentage\": 25\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/discount",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"discount"
+					]
+				},
+				"description": "Add discounts to multiple products at once (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Update Discounts (Admin Only)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"{{product_id}}\": 25\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/discount",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"discount"
+					]
+				},
+				"description": "Update product discounts (Admin only). Accepts a map of productId to discount percentage."
+			},
+			"response": []
+		},
+		{
+			"name": "5. Update Multiple Discounts (Admin Only)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product-id-1\": 30,\n    \"product-id-2\": 20,\n    \"product-id-3\": 35\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/discount",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"discount"
+					]
+				},
+				"description": "Update multiple product discounts at once (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Delete Discount (Admin Only)",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/discount/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"discount",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{discount_id}}",
+							"description": "Discount ID"
+						}
+					]
+				},
+				"description": "Delete a product discount (Admin only)"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

@@ -1,52 +1,52 @@
-# Multi-stage Docker build for Spring Boot application
+# Multi-stage build for optimized production image
+FROM golang:1.24-alpine AS builder
 
-# Stage 1: Build stage
-FROM eclipse-temurin:17-jdk-alpine AS builder
+# Install build dependencies
+RUN apk add --no-cache git ca-certificates tzdata
 
 # Set working directory
 WORKDIR /app
 
-# Install Maven
-RUN apk add --no-cache maven
+# Copy go mod files
+COPY go.mod go.sum ./
 
-# Copy Maven files first for better Docker layer caching
-COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
-COPY mvnw.cmd .
-
-# Make mvnw executable
-RUN chmod +x ./mvnw
-
-# Download dependencies (this layer will be cached if pom.xml doesn't change)
-RUN ./mvnw dependency:go-offline -B
+# Download dependencies
+RUN go mod download
 
 # Copy source code
-COPY src ./src
+COPY . .
 
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/server cmd/api/main.go
 
-# Stage 2: Runtime stage
-FROM eclipse-temurin:17-jre-alpine
+# Final stage - minimal runtime image
+FROM alpine:latest
+
+# Install runtime dependencies
+RUN apk --no-cache add ca-certificates tzdata
+
+# Create non-root user for security
+RUN addgroup -g 1000 appuser && \
+    adduser -D -u 1000 -G appuser appuser
 
 # Set working directory
-WORKDIR /app
+WORKDIR /home/appuser
 
-# Create a non-root user for security
-RUN addgroup --system spring && adduser --system spring --ingroup spring
-USER spring:spring
+# Copy binary from builder
+COPY --from=builder /app/bin/server .
 
-# Copy the jar file from builder stage
-COPY --from=builder /app/target/perfume-0.0.1-SNAPSHOT.jar app.jar
+# Change ownership
+RUN chown -R appuser:appuser /home/appuser
 
-# Expose the port that the application runs on
-EXPOSE 9001
+# Switch to non-root user
+USER appuser
 
-# Run the jar file with optimized JVM settings
-ENTRYPOINT ["java", \
-    "-XX:+UseContainerSupport", \
-    "-XX:MaxRAMPercentage=75.0", \
-    "-Djava.security.egd=file:/dev/./urandom", \
-    "-jar", \
-    "app.jar"]
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+# Run the application
+CMD ["./server"]

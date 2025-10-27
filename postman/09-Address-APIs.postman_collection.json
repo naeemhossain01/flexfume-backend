@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "address-apis-collection",
+		"name": "FlexFume - Address APIs",
+		"description": "User address management including add, update, and retrieve operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Add Address",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('address_id', jsonData.response.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fullName\": \"John Doe\",\n    \"phoneNumber\": \"+8801712345678\",\n    \"address\": \"Building A, Main Road, Gulshan\",\n    \"isDefault\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/address",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"address"
+					]
+				},
+				"description": "Add a new address for authenticated user"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get My Address",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{user_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/address",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"address"
+					]
+				},
+				"description": "Get address for authenticated user"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Update Address",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fullName\": \"John Doe\",\n    \"phoneNumber\": \"+8801712345678\",\n    \"address\": \"Building B, Second Road, Banani\",\n    \"isDefault\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/address/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"address",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{address_id}}",
+							"description": "Address ID"
+						}
+					]
+				},
+				"description": "Update an existing address for authenticated user"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

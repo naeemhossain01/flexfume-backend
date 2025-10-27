@@ -1,0 +1,552 @@
+{
+	"info": {
+		"_postman_id": "contact-apis-collection",
+		"name": "FlexFume - Contact APIs",
+		"description": "API endpoints for contact form submission management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Submit Contact Form - Complete Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 201', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});",
+							"",
+							"pm.test('Response contains contact ID and timestamp', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.response).to.have.property('contactId');",
+							"    pm.expect(jsonData.response).to.have.property('submittedAt');",
+							"    ",
+							"    // Store contact ID for use in other tests",
+							"    pm.collectionVariables.set('contact_id', jsonData.response.contactId);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1234567890\",\n  \"subject\": \"Product Inquiry\",\n  \"message\": \"I'm interested in learning more about your products. Could you please provide more information about pricing and availability?\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit Contact Form - Minimal Required Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 201', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"message\": \"Hello, I would like to get in touch regarding your services.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Validation - Missing Required Fields",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates error', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"message\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Validation - Invalid Email Format",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates invalid email', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.true;",
+							"    pm.expect(jsonData.message).to.include('email');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"invalid-email-format\",\n  \"message\": \"Test message with invalid email\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Validation - Invalid Phone Format",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates invalid phone', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.true;",
+							"    pm.expect(jsonData.message).to.include('phone');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"123\",\n  \"message\": \"Test message with invalid phone\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test XSS Protection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 201 (XSS sanitized)', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test('Response indicates success despite XSS attempt', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"<script>alert('xss')</script>John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"message\": \"<img src=x onerror=alert('xss')>Test message with XSS attempt\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Contact Submissions (Admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});",
+							"",
+							"pm.test('Response contains pagination data', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.response).to.have.property('submissions');",
+							"    pm.expect(jsonData.response).to.have.property('total');",
+							"    pm.expect(jsonData.response).to.have.property('page');",
+							"    pm.expect(jsonData.response).to.have.property('limit');",
+							"    pm.expect(jsonData.response).to.have.property('totalPages');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact?page=1&limit=10",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Contact Submission by ID (Admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('response');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});",
+							"",
+							"pm.test('Response contains contact submission data', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.response).to.have.property('id');",
+							"    pm.expect(jsonData.response).to.have.property('name');",
+							"    pm.expect(jsonData.response).to.have.property('email');",
+							"    pm.expect(jsonData.response).to.have.property('message');",
+							"    pm.expect(jsonData.response).to.have.property('createdAt');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact/{{contact_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact", "{{contact_id}}"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Contact Submission (Admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has correct structure', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.false;",
+							"});",
+							"",
+							"pm.test('Response indicates successful deletion', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('deleted');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact/{{contact_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact", "{{contact_id}}"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Admin Access - Unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 401 (Unauthorized)', function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test('Response indicates authentication required', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Field Length Limits",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400 for field length violations', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates validation error', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('error');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData.error).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"This is a very long name that exceeds the maximum allowed length of 255 characters and should trigger a validation error because it's way too long and contains way too many characters to be considered valid input for the name field which has a maximum length limit\",\n  \"email\": \"test@example.com\",\n  \"message\": \"Test message\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/contact",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "contact"]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "contact_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

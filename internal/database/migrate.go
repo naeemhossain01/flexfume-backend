@@ -1,0 +1,158 @@
+package database
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/seamlance/client-flexfume-ecom-backend-go/internal/config"
+)
+
+// RunMigrations runs database migrations
+func RunMigrations(cfg *config.Config) error {
+	// Create database connection string
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
+		cfg.Database.Host,
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.DBName,
+		cfg.Database.Port,
+		cfg.Database.SSLMode,
+		cfg.Database.TimeZone,
+	)
+
+	// Open database connection
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return fmt.Errorf("failed to open database: %w", err)
+	}
+	defer db.Close()
+
+	// Create postgres driver instance
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("failed to create postgres driver: %w", err)
+	}
+
+	// Create migrate instance
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres",
+		driver,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create migrate instance: %w", err)
+	}
+
+	// Run migrations
+	log.Println("Running database migrations...")
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("failed to run migrations: %w", err)
+	}
+
+	if err == migrate.ErrNoChange {
+		log.Println("No new migrations to apply")
+	} else {
+		log.Println("Migrations applied successfully")
+	}
+
+	return nil
+}
+
+// RollbackMigration rolls back the last migration
+func RollbackMigration(cfg *config.Config) error {
+	// Create database connection string
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
+		cfg.Database.Host,
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.DBName,
+		cfg.Database.Port,
+		cfg.Database.SSLMode,
+		cfg.Database.TimeZone,
+	)
+
+	// Open database connection
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return fmt.Errorf("failed to open database: %w", err)
+	}
+	defer db.Close()
+
+	// Create postgres driver instance
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("failed to create postgres driver: %w", err)
+	}
+
+	// Create migrate instance
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres",
+		driver,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create migrate instance: %w", err)
+	}
+
+	// Rollback one step
+	log.Println("Rolling back last migration...")
+	if err := m.Steps(-1); err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("failed to rollback migration: %w", err)
+	}
+
+	log.Println("Migration rolled back successfully")
+	return nil
+}
+
+// MigrateDown rolls back all migrations
+func MigrateDown(cfg *config.Config) error {
+	// Create database connection string
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
+		cfg.Database.Host,
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.DBName,
+		cfg.Database.Port,
+		cfg.Database.SSLMode,
+		cfg.Database.TimeZone,
+	)
+
+	// Open database connection
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return fmt.Errorf("failed to open database: %w", err)
+	}
+	defer db.Close()
+
+	// Create postgres driver instance
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("failed to create postgres driver: %w", err)
+	}
+
+	// Create migrate instance
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres",
+		driver,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create migrate instance: %w", err)
+	}
+
+	// Rollback all migrations
+	log.Println("Rolling back all migrations...")
+	if err := m.Down(); err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("failed to rollback all migrations: %w", err)
+	}
+
+	log.Println("All migrations rolled back successfully")
+	return nil
+}

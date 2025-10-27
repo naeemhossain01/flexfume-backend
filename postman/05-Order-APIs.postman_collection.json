@@ -1,0 +1,245 @@
+{
+	"info": {
+		"_postman_id": "order-apis-collection",
+		"name": "FlexFume - Order APIs",
+		"description": "Order management including placing orders, order history, and status updates. Note: Prices, delivery costs, and totals are calculated server-side.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Place Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('order_id', jsonData.response.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"items\": [\n        {\n            \"productId\": \"{{product_id}}\",\n            \"quantity\": 2\n        }\n    ],\n    \"shippingAddress\": {\n        \"address\": \"Building A, Main Road\",\n        \"area\": \"Gulshan\"\n    },\n    \"paymentMethod\": \"CASH_ON_DELIVERY\",\n    \"deliveryCostId\": \"{{delivery_cost_id}}\",\n    \"couponCode\": \"SAVE10\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/order",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order"
+					]
+				},
+				"description": "Place a new order (Authenticated - userId extracted from JWT token)\\n\\nServer-side calculations:\\n- Product prices are fetched and discounts applied automatically\\n- Delivery cost is fetched using deliveryCostId\\n- Total amount is calculated: (product prices * quantities) + delivery cost - coupon discount\\n- Coupon is optional and validated server-side"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get Order History",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/order/history",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order",
+						"history"
+					]
+				},
+				"description": "Get order history for the authenticated user (userId extracted from JWT token)"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Update Order Status (Admin Only)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/order/:orderId?status=CONFIRMED",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order",
+						":orderId"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "CONFIRMED",
+							"description": "Order status: PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, RETURNED"
+						}
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{order_id}}",
+							"description": "Order ID"
+						}
+					]
+				},
+				"description": "Update order status (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Filter Orders (Admin Only)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/order/filter?status=PENDING&page=0&size=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order",
+						"filter"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "PENDING",
+							"description": "Filter by status (optional)"
+						},
+						{
+							"key": "startDate",
+							"value": "2024-01-01T00:00:00Z",
+							"description": "Start date (ISO 8601 format)",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2024-12-31T23:59:59Z",
+							"description": "End date (ISO 8601 format)",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "0",
+							"description": "Page number"
+						},
+						{
+							"key": "size",
+							"value": "10",
+							"description": "Page size"
+						}
+					]
+				},
+				"description": "Filter orders by status and date range (Admin only)"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Filter Orders By Date Range (Admin Only)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/order/filter?startDate=2024-01-01T00:00:00Z&endDate=2024-12-31T23:59:59Z&page=0&size=20",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"order",
+						"filter"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2024-01-01T00:00:00Z",
+							"description": "Start date (ISO 8601 format)"
+						},
+						{
+							"key": "endDate",
+							"value": "2024-12-31T23:59:59Z",
+							"description": "End date (ISO 8601 format)"
+						},
+						{
+							"key": "page",
+							"value": "0",
+							"description": "Page number"
+						},
+						{
+							"key": "size",
+							"value": "20",
+							"description": "Page size"
+						}
+					]
+				},
+				"description": "Filter orders by date range (Admin only)"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

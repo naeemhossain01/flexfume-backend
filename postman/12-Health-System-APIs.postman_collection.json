@@ -1,0 +1,77 @@
+{
+	"info": {
+		"_postman_id": "health-system-apis-collection",
+		"name": "FlexFume - Health & System APIs",
+		"description": "Health checks and system monitoring endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Check if the application is running and healthy"
+			},
+			"response": []
+		},
+		{
+			"name": "2. System Wake Up",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/system/wake-up",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"system",
+						"wake-up"
+					]
+				},
+				"description": "Comprehensive system health checks including database and Redis connectivity"
+			},
+			"response": []
+		},
+		{
+			"name": "3. System Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/system/ping",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"system",
+						"ping"
+					]
+				},
+				"description": "Simple ping endpoint to check if backend is awake"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
