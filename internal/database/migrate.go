@@ -25,6 +25,7 @@ func getMigrationsPath() (string, error) {
 	
 	// Check if migrations directory exists
 	if _, err := os.Stat(migrationsPath); err == nil {
+		log.Printf("Found migrations at: %s", migrationsPath)
 		return fmt.Sprintf("file://%s", migrationsPath), nil
 	}
 
@@ -38,6 +39,7 @@ func getMigrationsPath() (string, error) {
 	migrationsPath = filepath.Join(exeDir, "migrations")
 	
 	if _, err := os.Stat(migrationsPath); err == nil {
+		log.Printf("Found migrations at: %s", migrationsPath)
 		return fmt.Sprintf("file://%s", migrationsPath), nil
 	}
 
@@ -45,8 +47,25 @@ func getMigrationsPath() (string, error) {
 	migrationsPath = filepath.Join(exeDir, "..", "migrations")
 	if _, err := os.Stat(migrationsPath); err == nil {
 		absPath, _ := filepath.Abs(migrationsPath)
+		log.Printf("Found migrations at: %s", absPath)
 		return fmt.Sprintf("file://%s", absPath), nil
 	}
+
+	// If still not found, try /app/migrations (Render native runtime)
+	migrationsPath = "/app/migrations"
+	if _, err := os.Stat(migrationsPath); err == nil {
+		log.Printf("Found migrations at: %s", migrationsPath)
+		return fmt.Sprintf("file://%s", migrationsPath), nil
+	}
+
+	// Log debug information
+	log.Printf("Current working directory: %s", cwd)
+	log.Printf("Executable directory: %s", exeDir)
+	log.Printf("Checked paths: %s, %s, %s, %s", 
+		filepath.Join(cwd, "migrations"),
+		filepath.Join(exeDir, "migrations"),
+		filepath.Join(exeDir, "..", "migrations"),
+		"/app/migrations")
 
 	return "", fmt.Errorf("migrations directory not found in any expected location")
 }
