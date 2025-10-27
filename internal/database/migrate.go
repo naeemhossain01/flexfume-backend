@@ -4,12 +4,52 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/seamlance/client-flexfume-ecom-backend-go/internal/config"
 )
+
+// getMigrationsPath returns the absolute path to the migrations directory
+func getMigrationsPath() (string, error) {
+	// Try to get the path relative to the current working directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("failed to get current working directory: %w", err)
+	}
+
+	migrationsPath := filepath.Join(cwd, "migrations")
+	
+	// Check if migrations directory exists
+	if _, err := os.Stat(migrationsPath); err == nil {
+		return fmt.Sprintf("file://%s", migrationsPath), nil
+	}
+
+	// If not found in cwd, try relative to the executable
+	exePath, err := os.Executable()
+	if err != nil {
+		return "", fmt.Errorf("failed to get executable path: %w", err)
+	}
+
+	exeDir := filepath.Dir(exePath)
+	migrationsPath = filepath.Join(exeDir, "migrations")
+	
+	if _, err := os.Stat(migrationsPath); err == nil {
+		return fmt.Sprintf("file://%s", migrationsPath), nil
+	}
+
+	// If still not found, try parent directories (useful for development)
+	migrationsPath = filepath.Join(exeDir, "..", "migrations")
+	if _, err := os.Stat(migrationsPath); err == nil {
+		absPath, _ := filepath.Abs(migrationsPath)
+		return fmt.Sprintf("file://%s", absPath), nil
+	}
+
+	return "", fmt.Errorf("migrations directory not found in any expected location")
+}
 
 // RunMigrations runs database migrations
 func RunMigrations(cfg *config.Config) error {
@@ -38,9 +78,15 @@ func RunMigrations(cfg *config.Config) error {
 		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}
 
+	// Get migrations path
+	migrationsPath, err := getMigrationsPath()
+	if err != nil {
+		return fmt.Errorf("failed to get migrations path: %w", err)
+	}
+
 	// Create migrate instance
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
+		migrationsPath,
 		"postgres",
 		driver,
 	)
@@ -90,9 +136,15 @@ func RollbackMigration(cfg *config.Config) error {
 		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}
 
+	// Get migrations path
+	migrationsPath, err := getMigrationsPath()
+	if err != nil {
+		return fmt.Errorf("failed to get migrations path: %w", err)
+	}
+
 	// Create migrate instance
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
+		migrationsPath,
 		"postgres",
 		driver,
 	)
@@ -137,9 +189,15 @@ func MigrateDown(cfg *config.Config) error {
 		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}
 
+	// Get migrations path
+	migrationsPath, err := getMigrationsPath()
+	if err != nil {
+		return fmt.Errorf("failed to get migrations path: %w", err)
+	}
+
 	// Create migrate instance
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
+		migrationsPath,
 		"postgres",
 		driver,
 	)
