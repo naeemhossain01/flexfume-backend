@@ -102,6 +102,10 @@ func (s *ProductService) UpdateProduct(productID string, updatedProduct *models.
 		product.ImageURL = updatedProduct.ImageURL
 	}
 
+	if updatedProduct.YouTubeVideoUrl != "" {
+		product.YouTubeVideoUrl = updatedProduct.YouTubeVideoUrl
+	}
+
 	if updatedProduct.Price > 0 {
 		product.Price = updatedProduct.Price
 	}

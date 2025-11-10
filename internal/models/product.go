@@ -14,8 +14,9 @@ type Product struct {
 	ProductCode string         `gorm:"uniqueIndex" json:"productCode"`
 	Description string         `gorm:"type:text" json:"description"`
 	LongDescription string    `gorm:"type:text" json:"longDescription"`
-	ImageURL    string         `json:"imageUrl"`
-	Price       float64        `gorm:"type:decimal(10,2);not null" json:"price"`
+	ImageURL        string         `json:"imageUrl"`
+	YouTubeVideoUrl string         `gorm:"column:youtube_video_url" json:"youtubeVideoUrl"`
+	Price           float64        `gorm:"type:decimal(10,2);not null" json:"price"`
 	Stock       int            `gorm:"default:0" json:"stock"`
 	CategoryID         string           `gorm:"type:uuid;not null" json:"categoryId"`
 	KeyFeatures        pq.StringArray   `gorm:"type:text[]" json:"keyFeatures,omitempty"`
@@ -43,14 +44,16 @@ type ProductResponse struct {
 	ProductCode  string            `json:"productCode"`
 	Description  string            `json:"description"`
 	LongDescription string         `json:"longDescription"`
-	ImageURL     string            `json:"imageUrl"`
-	Price        float64           `json:"price"`
+	ImageURL        string            `json:"imageUrl"`
+	YouTubeVideoUrl string            `json:"youtubeVideoUrl"`
+	Price           float64           `json:"price"`
 	Stock        int               `json:"stock"`
 	CategoryID         string            `json:"categoryId"`
 	KeyFeatures        []string          `json:"keyFeatures,omitempty"`
 	WhyChooseBenefits  []string          `json:"whyChooseBenefits,omitempty"`
 	CategoryInfo       *CategoryResponse `json:"categoryInfo,omitempty"`
 	DiscountPercentage *int              `json:"discountPercentage,omitempty"`
+	DiscountPrice      *float64          `json:"discountPrice,omitempty"`
 	CreatedAt          time.Time         `json:"createdAt"`
 	UpdatedAt          time.Time         `json:"updatedAt"`
 }
@@ -64,6 +67,7 @@ func (p *Product) ToResponse() ProductResponse {
 		Description:       p.Description,
 		LongDescription:   p.LongDescription,
 		ImageURL:          p.ImageURL,
+		YouTubeVideoUrl:   p.YouTubeVideoUrl,
 		Price:             p.Price,
 		Stock:             p.Stock,
 		CategoryID:        p.CategoryID,
@@ -80,6 +84,7 @@ func (p *Product) ToResponse() ProductResponse {
 	
 	if p.Discount != nil {
 		response.DiscountPercentage = &p.Discount.Percentage
+		response.DiscountPrice = &p.Discount.DiscountPrice
 	}
 	
 	return response

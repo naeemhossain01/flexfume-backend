@@ -305,13 +305,23 @@ func seedDiscounts() error {
 			continue
 		}
 
-		// Create discount with 33% off
+		// Get product to calculate discount price
+		var product models.Product
+		if err := database.DB.First(&product, "id = ?", productID).Error; err != nil {
+			return err
+		}
+
+		// Create discount with 33% off - calculate discount price from original price
+		percentage := 33
+		discountPrice := product.Price * (1 - float64(percentage)/100.0)
+		
 		discount := models.Discount{
-			ID:         uuid.New().String(),
-			ProductID:  productID,
-			Percentage: 33,
-			CreatedAt:  time.Now(),
-			UpdatedAt:  time.Now(),
+			ID:            uuid.New().String(),
+			ProductID:     productID,
+			Percentage:    percentage,
+			DiscountPrice: discountPrice,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
 		}
 
 		if err := database.DB.Create(&discount).Error; err != nil {
@@ -321,6 +331,8 @@ func seedDiscounts() error {
 		log.Printf("✓ Discount created successfully (ID: %s)", discount.ID)
 		log.Printf("  Product ID: %s", discount.ProductID)
 		log.Printf("  Percentage: %d%%", discount.Percentage)
+		log.Printf("  Original Price: %.2f", product.Price)
+		log.Printf("  Discount Price: %.2f", discount.DiscountPrice)
 	}
 
 	log.Println("Discounts seeding completed!")

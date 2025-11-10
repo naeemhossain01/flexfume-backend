@@ -320,13 +320,77 @@
 			]
 		},
 		{
-			"name": "🎟️ Apply Coupon",
+			"name": "🎟️ Coupons",
 			"item": [
 				{
-					"name": "Get All Coupons",
+					"name": "Get Coupon By ID (Public)",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/coupon/get/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"coupon",
+								"get",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{coupon_id}}",
+									"description": "Coupon ID"
+								}
+							]
+						},
+						"description": "Get coupon details by ID (Public)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Coupon By Code (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/coupon/code/:code",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"coupon",
+								"code",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": "SUMMER2024",
+									"description": "Coupon Code"
+								}
+							]
+						},
+						"description": "Get coupon details by code (Public)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Coupons (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base_url}}/api/v1/coupon/all",
 							"host": [
@@ -338,45 +402,8 @@
 								"coupon",
 								"all"
 							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Apply Coupon",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{auth_token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"couponCode\": \"{{coupon_code}}\",\n    \"cartInfoList\": [\n        \"{{product_id}}\"\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
 						},
-						"url": {
-							"raw": "{{base_url}}/api/v1/coupon-usage",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"coupon-usage"
-							]
-						}
+						"description": "Get all coupons (Admin only)"
 					},
 					"response": []
 				}

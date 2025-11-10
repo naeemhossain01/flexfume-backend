@@ -44,9 +44,9 @@ func main() {
 		log.Println("OTP service initialized successfully")
 	}
 
-	// Initialize JWT manager (1 hour token expiration - matches Spring Boot)
-	// Spring Boot: EXPIRATION_TIME_IN_MILLISECONDS = 1000L * 60L * 60L (1 hour)
-	jwtManager := auth.NewJWTManager(cfg.JWT.Secret, 1*time.Hour)
+	// Initialize JWT manager (3 months token expiration)
+	// 3 months = 90 days * 24 hours
+	jwtManager := auth.NewJWTManager(cfg.JWT.Secret, 90*24*time.Hour)
 
 	// Initialize S3 service (optional - will gracefully degrade if not configured)
 	s3Service, err := services.NewS3Service(cfg)
@@ -65,7 +65,6 @@ func main() {
 	discountService := services.NewDiscountService(productService)
 	deliveryCostService := services.NewDeliveryCostService()
 	orderService := services.NewOrderService(userService, productService, discountService, deliveryCostService, couponService)
-	couponUsageService := services.NewCouponUsageService(couponService, discountService)
 	addressService := services.NewAddressService(userService)
 	checkoutService := services.NewCheckoutService(otpService, userService, jwtManager)
 	systemService := services.NewSystemService(redisService)
@@ -90,7 +89,6 @@ func main() {
 	orderHandler := handlers.NewOrderHandler(orderService)
 	couponHandler := handlers.NewCouponHandler(couponService)
 	discountHandler := handlers.NewDiscountHandler(discountService)
-	couponUsageHandler := handlers.NewCouponUsageHandler(couponUsageService)
 	addressHandler := handlers.NewAddressHandler(addressService)
 	deliveryCostHandler := handlers.NewDeliveryCostHandler(deliveryCostService)
 	healthHandler := handlers.NewHealthHandler()
@@ -181,20 +179,15 @@ func main() {
 		// Coupon routes
 		couponRoutes := v1.Group("/coupon")
 		{
+			// Public routes
+			couponRoutes.GET("/get/:id", couponHandler.GetCouponByID)
+			couponRoutes.GET("/code/:code", couponHandler.GetCouponByCode)
+
 			// Admin only routes
-			couponRoutes.GET("/:id", middleware.AuthMiddleware(jwtManager), middleware.RequireAdmin(), couponHandler.GetCouponByID)
 			couponRoutes.GET("/all", middleware.AuthMiddleware(jwtManager), middleware.RequireAdmin(), couponHandler.GetAllCoupons)
 			couponRoutes.POST("", middleware.AuthMiddleware(jwtManager), middleware.RequireAdmin(), couponHandler.CreateCoupon)
 			couponRoutes.PUT("/:id", middleware.AuthMiddleware(jwtManager), middleware.RequireAdmin(), couponHandler.UpdateCoupon)
 			couponRoutes.DELETE("/:id", middleware.AuthMiddleware(jwtManager), middleware.RequireAdmin(), couponHandler.DeleteCoupon)
-		}
-
-		// Coupon Usage routes
-		couponUsageRoutes := v1.Group("/coupon-usage")
-		{
-			// Authenticated routes
-			couponUsageRoutes.POST("", middleware.AuthMiddleware(jwtManager), couponUsageHandler.ApplyCoupon)
-			couponUsageRoutes.DELETE("", middleware.AuthMiddleware(jwtManager), couponUsageHandler.RemoveCoupon)
 		}
 
 		// Discount routes

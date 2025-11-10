@@ -32,6 +32,7 @@ type CreateProductRequest struct {
 	CategoryID        string   `json:"categoryId" binding:"required"`
 	Stock             int      `json:"stock"`
 	ImageURL          string   `json:"imageUrl"`
+	YouTubeVideoUrl   string   `json:"youtubeVideoUrl"`
 	KeyFeatures       []string `json:"keyFeatures" binding:"omitempty"`
 	WhyChooseBenefits []string `json:"whyChooseBenefits" binding:"omitempty"`
 }
@@ -46,6 +47,7 @@ type UpdateProductRequest struct {
 	CategoryID        string   `json:"categoryId"`
 	Stock             int      `json:"stock"`
 	ImageURL          string   `json:"imageUrl"`
+	YouTubeVideoUrl   string   `json:"youtubeVideoUrl"`
 	KeyFeatures       []string `json:"keyFeatures" binding:"omitempty"`
 	WhyChooseBenefits []string `json:"whyChooseBenefits" binding:"omitempty"`
 }
@@ -69,6 +71,7 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 		Stock:             req.Stock,
 		CategoryID:        req.CategoryID,
 		ImageURL:          req.ImageURL,
+		YouTubeVideoUrl:   req.YouTubeVideoUrl,
 		KeyFeatures:       req.KeyFeatures,
 		WhyChooseBenefits: req.WhyChooseBenefits,
 	}
@@ -118,6 +121,7 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 		Stock:             req.Stock,
 		CategoryID:        req.CategoryID,
 		ImageURL:          req.ImageURL,
+		YouTubeVideoUrl:   req.YouTubeVideoUrl,
 		KeyFeatures:       req.KeyFeatures,
 		WhyChooseBenefits: req.WhyChooseBenefits,
 	}

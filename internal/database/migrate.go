@@ -6,12 +6,41 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/seamlance/client-flexfume-ecom-backend-go/internal/config"
 )
+
+// pathToFileURL converts a file path to a proper file:// URL
+// This handles both Windows (C:\path) and Unix (/path) paths correctly
+func pathToFileURL(path string) string {
+	// Ensure we have an absolute path
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		log.Printf("Warning: failed to get absolute path for %s: %v", path, err)
+		absPath = path
+	}
+	
+	// Convert to forward slashes
+	absPath = filepath.ToSlash(absPath)
+	
+	// golang-migrate on Windows has issues with standard file:/// URLs
+	// Use a simpler format that works on Windows: file://D:/path
+	if runtime.GOOS == "windows" && len(absPath) >= 2 && absPath[1] == ':' {
+		// Windows: file:// + D:/path = file://D:/path (NO leading slash before drive)
+		urlStr := "file://" + absPath
+		log.Printf("Generated file URL: %s", urlStr)
+		return urlStr
+	}
+	
+	// Unix: file:// + /path = file:///path (3 slashes total)
+	urlStr := "file://" + absPath
+	log.Printf("Generated file URL: %s", urlStr)
+	return urlStr
+}
 
 // getMigrationsPath returns the absolute path to the migrations directory
 func getMigrationsPath() (string, error) {
@@ -26,7 +55,7 @@ func getMigrationsPath() (string, error) {
 	// Check if migrations directory exists
 	if _, err := os.Stat(migrationsPath); err == nil {
 		log.Printf("Found migrations at: %s", migrationsPath)
-		return fmt.Sprintf("file://%s", migrationsPath), nil
+		return pathToFileURL(migrationsPath), nil
 	}
 
 	// If not found in cwd, try relative to the executable
@@ -40,7 +69,7 @@ func getMigrationsPath() (string, error) {
 	
 	if _, err := os.Stat(migrationsPath); err == nil {
 		log.Printf("Found migrations at: %s", migrationsPath)
-		return fmt.Sprintf("file://%s", migrationsPath), nil
+		return pathToFileURL(migrationsPath), nil
 	}
 
 	// If still not found, try parent directories (useful for development)
@@ -48,14 +77,14 @@ func getMigrationsPath() (string, error) {
 	if _, err := os.Stat(migrationsPath); err == nil {
 		absPath, _ := filepath.Abs(migrationsPath)
 		log.Printf("Found migrations at: %s", absPath)
-		return fmt.Sprintf("file://%s", absPath), nil
+		return pathToFileURL(absPath), nil
 	}
 
 	// If still not found, try /app/migrations (Render native runtime)
 	migrationsPath = "/app/migrations"
 	if _, err := os.Stat(migrationsPath); err == nil {
 		log.Printf("Found migrations at: %s", migrationsPath)
-		return fmt.Sprintf("file://%s", migrationsPath), nil
+		return pathToFileURL(migrationsPath), nil
 	}
 
 	// Log debug information
@@ -102,6 +131,7 @@ func RunMigrations(cfg *config.Config) error {
 	if err != nil {
 		return fmt.Errorf("failed to get migrations path: %w", err)
 	}
+	log.Printf("Using migrations URL: %s", migrationsPath)
 
 	// Create migrate instance
 	m, err := migrate.NewWithDatabaseInstance(

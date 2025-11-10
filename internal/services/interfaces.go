@@ -67,17 +67,10 @@ type CouponServiceInterface interface {
 // DiscountServiceInterface defines the interface for discount operations
 type DiscountServiceInterface interface {
 	AddDiscounts(discounts []models.Discount) ([]models.Discount, error)
-	UpdateDiscounts(discountMap map[string]int) ([]models.Discount, error)
+	UpdateDiscounts(discounts []models.Discount) ([]models.Discount, error)
 	GetAllDiscounts() ([]models.Discount, error)
 	GetDiscountByProductID(productID string) (*models.Discount, error)
 	DeleteDiscount(discountID string) error
-}
-
-// CouponUsageServiceInterface defines the interface for coupon usage operations
-type CouponUsageServiceInterface interface {
-	ApplyCoupon(cartIDs []string, couponCode string, userID string) (float64, error)
-	RemoveCouponUsage(couponCode string, userID string) error
-	GetCouponUsage(couponCode string, userID string) (*models.CouponUsage, error)
 }
 
 // AddressServiceInterface defines the interface for address operations

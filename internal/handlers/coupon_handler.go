@@ -219,6 +219,36 @@ func (h *CouponHandler) GetCouponByID(c *gin.Context) {
 	})
 }
 
+// GetCouponByCode retrieves a coupon by code (Public)
+func (h *CouponHandler) GetCouponByCode(c *gin.Context) {
+	couponCode := c.Param("code")
+
+	coupon, err := h.couponService.GetCouponByCode(couponCode)
+	if err != nil {
+		if err == services.ErrCouponNotFound {
+			c.JSON(http.StatusNotFound, APIResponse{
+				Error:   true,
+				Message: err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, APIResponse{
+			Error:   true,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	// Enrich with usage statistics
+	response := h.couponService.EnrichCouponWithStatistics(coupon)
+
+	c.JSON(http.StatusOK, APIResponse{
+		Error:    false,
+		Message:  "SUCCESS",
+		Response: response,
+	})
+}
+
 // GetAllCoupons retrieves all coupons
 func (h *CouponHandler) GetAllCoupons(c *gin.Context) {
 	coupons, err := h.couponService.GetAllCoupons()

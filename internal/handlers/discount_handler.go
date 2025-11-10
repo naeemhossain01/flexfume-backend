@@ -22,8 +22,9 @@ func NewDiscountHandler(discountService services.DiscountServiceInterface) *Disc
 
 // AddDiscountRequest represents a single discount in the request
 type AddDiscountRequest struct {
-	ProductID          string `json:"productId" binding:"required"`
-	DiscountPercentage int    `json:"discountPercentage" binding:"required,min=0,max=100"`
+	ProductID          string  `json:"productId" binding:"required"`
+	DiscountPrice      float64 `json:"discountPrice" binding:"required,gt=0"`
+	DiscountPercentage int     `json:"discountPercentage"`
 }
 
 // AddDiscounts adds discounts to products (Admin only)
@@ -49,8 +50,9 @@ func (h *DiscountHandler) AddDiscounts(c *gin.Context) {
 	discounts := make([]models.Discount, len(req))
 	for i, item := range req {
 		discounts[i] = models.Discount{
-			ProductID:  item.ProductID,
-			Percentage: item.DiscountPercentage,
+			ProductID:     item.ProductID,
+			DiscountPrice: item.DiscountPrice,
+			Percentage:    item.DiscountPercentage,
 		}
 	}
 
@@ -64,7 +66,7 @@ func (h *DiscountHandler) AddDiscounts(c *gin.Context) {
 			return
 		}
 		if err == services.ErrDiscountAlreadyExists || 
-		   err == services.ErrDiscountPercentageInvalid ||
+		   err == services.ErrDiscountPriceRequired ||
 		   err == services.ErrDiscountProductRequired {
 			c.JSON(http.StatusBadRequest, APIResponse{
 				Error:   true,
@@ -92,9 +94,16 @@ func (h *DiscountHandler) AddDiscounts(c *gin.Context) {
 	})
 }
 
+// UpdateDiscountRequest represents the request body for updating a discount
+type UpdateDiscountRequest struct {
+	ProductID          string  `json:"productId" binding:"required"`
+	DiscountPrice      float64 `json:"discountPrice" binding:"required,gt=0"`
+	DiscountPercentage int     `json:"discountPercentage"`
+}
+
 // UpdateDiscounts updates product discounts (Admin only)
 func (h *DiscountHandler) UpdateDiscounts(c *gin.Context) {
-	var req map[string]int
+	var req []UpdateDiscountRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, APIResponse{
 			Error:   true,
@@ -111,7 +120,17 @@ func (h *DiscountHandler) UpdateDiscounts(c *gin.Context) {
 		return
 	}
 
-	updatedDiscounts, err := h.discountService.UpdateDiscounts(req)
+	// Convert to discount models
+	discounts := make([]models.Discount, len(req))
+	for i, item := range req {
+		discounts[i] = models.Discount{
+			ProductID:     item.ProductID,
+			DiscountPrice: item.DiscountPrice,
+			Percentage:    item.DiscountPercentage,
+		}
+	}
+
+	updatedDiscounts, err := h.discountService.UpdateDiscounts(discounts)
 	if err != nil {
 		if err == services.ErrDiscountNotFound {
 			c.JSON(http.StatusNotFound, APIResponse{
@@ -120,7 +139,7 @@ func (h *DiscountHandler) UpdateDiscounts(c *gin.Context) {
 			})
 			return
 		}
-		if err == services.ErrDiscountPercentageInvalid {
+		if err == services.ErrDiscountPriceRequired {
 			c.JSON(http.StatusBadRequest, APIResponse{
 				Error:   true,
 				Message: err.Error(),

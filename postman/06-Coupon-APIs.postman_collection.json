@@ -7,7 +7,103 @@
 	},
 	"item": [
 		{
-			"name": "1. Get All Coupons (Admin Only)",
+			"name": "1. Get Coupon By ID (Public)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('coupon_id', jsonData.response.id);",
+							"    }",
+							"    if (jsonData.response && jsonData.response.code) {",
+							"        pm.environment.set('coupon_code', jsonData.response.code);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/coupon/get/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"coupon",
+						"get",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{coupon_id}}",
+							"description": "Coupon ID"
+						}
+					]
+				},
+				"description": "Get coupon details by ID with usage statistics (Public - No authentication required)"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get Coupon By Code (Public)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.response && jsonData.response.id) {",
+							"        pm.environment.set('coupon_id', jsonData.response.id);",
+							"    }",
+							"    if (jsonData.response && jsonData.response.code) {",
+							"        pm.environment.set('coupon_code', jsonData.response.code);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/coupon/code/:code",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"coupon",
+						"code",
+						":code"
+					],
+					"variable": [
+						{
+							"key": "code",
+							"value": "{{coupon_code}}",
+							"description": "Coupon Code (e.g., SUMMER2024)"
+						}
+					]
+				},
+				"description": "Get coupon details by code with usage statistics (Public - No authentication required)"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Get All Coupons (Admin Only)",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -34,60 +130,7 @@
 			"response": []
 		},
 		{
-			"name": "2. Get Coupon By ID (Admin Only)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"if (pm.response.code === 200) {",
-							"    var jsonData = pm.response.json();",
-							"    if (jsonData.response && jsonData.response.id) {",
-							"        pm.environment.set('coupon_id', jsonData.response.id);",
-							"    }",
-							"    if (jsonData.response && jsonData.response.code) {",
-							"        pm.environment.set('coupon_code', jsonData.response.code);",
-							"    }",
-							"}"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{admin_token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/api/v1/coupon/:id",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"coupon",
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "{{coupon_id}}",
-							"description": "Coupon ID"
-						}
-					]
-				},
-				"description": "Get coupon details by ID with usage statistics (Admin only)"
-			},
-			"response": []
-		},
-		{
-			"name": "3. Create Coupon (Admin Only)",
+			"name": "4. Create Coupon (Admin Only)",
 			"event": [
 				{
 					"listen": "test",
@@ -145,7 +188,7 @@
 			"response": []
 		},
 		{
-			"name": "4. Create Fixed Discount Coupon (Admin Only)",
+			"name": "5. Create Fixed Discount Coupon (Admin Only)",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -184,7 +227,7 @@
 			"response": []
 		},
 		{
-			"name": "5. Update Coupon (Admin Only)",
+			"name": "6. Update Coupon (Admin Only)",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -231,7 +274,7 @@
 			"response": []
 		},
 		{
-			"name": "6. Deactivate Coupon (Admin Only)",
+			"name": "7. Deactivate Coupon (Admin Only)",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -278,7 +321,7 @@
 			"response": []
 		},
 		{
-			"name": "7. Delete Coupon (Admin Only)",
+			"name": "8. Delete Coupon (Admin Only)",
 			"request": {
 				"method": "DELETE",
 				"header": [

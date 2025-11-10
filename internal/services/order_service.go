@@ -76,9 +76,8 @@ func (s *OrderService) PlaceOrder(req models.OrderRequest) (*models.Order, error
 		itemPrice := product.Price
 		discount, err := s.discountService.GetDiscountByProductID(item.ProductID)
 		if err == nil && discount != nil {
-			// Apply discount percentage
-			discountAmount := itemPrice * float64(discount.Percentage) / 100.0
-			itemPrice = itemPrice - discountAmount
+			// Use the user-defined discount price instead of calculating from percentage
+			itemPrice = discount.DiscountPrice
 		}
 
 		// Calculate total price for this item (price * quantity)
@@ -115,6 +114,19 @@ func (s *OrderService) PlaceOrder(req models.OrderRequest) (*models.Order, error
 		// Validate coupon
 		if err := s.couponService.ValidateCoupon(coupon); err != nil {
 			return nil, fmt.Errorf("coupon validation failed: %w", err)
+		}
+
+		// Check user's coupon usage limit by counting usage records
+		var usageCount int64
+		err = database.GetDB().Model(&models.CouponUsage{}).
+			Where("coupon_id = ? AND user_id = ?", coupon.ID, req.UserID).
+			Count(&usageCount).Error
+		if err != nil {
+			return nil, fmt.Errorf("failed to check coupon usage: %w", err)
+		}
+
+		if int(usageCount) >= coupon.UsageLimit {
+			return nil, fmt.Errorf("coupon usage limit exceeded: you have already used this coupon %d times", usageCount)
 		}
 
 		// Check minimum order amount
@@ -205,6 +217,19 @@ func (s *OrderService) PlaceOrder(req models.OrderRequest) (*models.Order, error
 			Update("stock", gorm.Expr("stock - ?", orderItems[i].Quantity)).Error; err != nil {
 			tx.Rollback()
 			return nil, err
+		}
+	}
+
+	// Record coupon usage - create a new record for each usage
+	if couponID != nil {
+		couponUsage := models.CouponUsage{
+			CouponID: *couponID,
+			UserID:   req.UserID,
+			OrderID:  &order.ID,
+		}
+		if err := tx.Create(&couponUsage).Error; err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("failed to create coupon usage record: %w", err)
 		}
 	}
 

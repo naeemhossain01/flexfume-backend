@@ -65,7 +65,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n    {\n        \"productId\": \"{{product_id}}\",\n        \"discountPercentage\": 33\n    }\n]",
+					"raw": "[\n    {\n        \"productId\": \"{{product_id}}\",\n        \"discountPrice\": 998.30,\n        \"discountPercentage\": 33\n    }\n]",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -83,7 +83,7 @@
 						"discount"
 					]
 				},
-				"description": "Add discounts to products (Admin only). Accepts an array of discount objects."
+				"description": "Add discounts to products (Admin only). Each discount requires productId, discountPrice (required), and optional discountPercentage."
 			},
 			"response": []
 		},
@@ -104,7 +104,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n    {\n        \"productId\": \"product-id-1\",\n        \"discountPercentage\": 20\n    },\n    {\n        \"productId\": \"product-id-2\",\n        \"discountPercentage\": 15\n    },\n    {\n        \"productId\": \"product-id-3\",\n        \"discountPercentage\": 25\n    }\n]",
+					"raw": "[\n    {\n        \"productId\": \"product-id-1\",\n        \"discountPrice\": 1192.00,\n        \"discountPercentage\": 20\n    },\n    {\n        \"productId\": \"product-id-2\",\n        \"discountPrice\": 1266.50,\n        \"discountPercentage\": 15\n    },\n    {\n        \"productId\": \"product-id-3\",\n        \"discountPrice\": 1117.50,\n        \"discountPercentage\": 25\n    }\n]",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -122,7 +122,7 @@
 						"discount"
 					]
 				},
-				"description": "Add discounts to multiple products at once (Admin only)"
+				"description": "Add discounts to multiple products at once (Admin only). Each discount requires discountPrice and optionally discountPercentage."
 			},
 			"response": []
 		},
@@ -143,7 +143,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"{{product_id}}\": 25\n}",
+					"raw": "[\n    {\n        \"productId\": \"{{product_id}}\",\n        \"discountPrice\": 1117.50,\n        \"discountPercentage\": 25\n    }\n]",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -161,7 +161,7 @@
 						"discount"
 					]
 				},
-				"description": "Update product discounts (Admin only). Accepts a map of productId to discount percentage."
+				"description": "Update product discounts (Admin only). Accepts an array of discount objects with productId, discountPrice (required), and optional discountPercentage."
 			},
 			"response": []
 		},
@@ -182,7 +182,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"product-id-1\": 30,\n    \"product-id-2\": 20,\n    \"product-id-3\": 35\n}",
+					"raw": "[\n    {\n        \"productId\": \"product-id-1\",\n        \"discountPrice\": 1043.00,\n        \"discountPercentage\": 30\n    },\n    {\n        \"productId\": \"product-id-2\",\n        \"discountPrice\": 1192.00,\n        \"discountPercentage\": 20\n    },\n    {\n        \"productId\": \"product-id-3\",\n        \"discountPrice\": 968.50,\n        \"discountPercentage\": 35\n    }\n]",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -200,7 +200,7 @@
 						"discount"
 					]
 				},
-				"description": "Update multiple product discounts at once (Admin only)"
+				"description": "Update multiple product discounts at once (Admin only). Each discount requires discountPrice and optionally discountPercentage."
 			},
 			"response": []
 		},

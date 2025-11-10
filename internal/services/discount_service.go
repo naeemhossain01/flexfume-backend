@@ -9,10 +9,11 @@ import (
 )
 
 var (
-	ErrDiscountNotFound       = errors.New("discount not found")
-	ErrDiscountProductRequired = errors.New("product ID is required for discount")
+	ErrDiscountNotFound          = errors.New("discount not found")
+	ErrDiscountProductRequired   = errors.New("product ID is required for discount")
 	ErrDiscountPercentageInvalid = errors.New("discount percentage must be between 0 and 100")
-	ErrDiscountAlreadyExists  = errors.New("discount already exists for this product")
+	ErrDiscountPriceRequired     = errors.New("discount price is required and must be greater than 0")
+	ErrDiscountAlreadyExists     = errors.New("discount already exists for this product")
 )
 
 // DiscountService handles discount-related business logic
@@ -37,6 +38,10 @@ func (s *DiscountService) AddDiscounts(discounts []models.Discount) ([]models.Di
 	for i := range discounts {
 		if discounts[i].ProductID == "" {
 			return nil, ErrDiscountProductRequired
+		}
+
+		if discounts[i].DiscountPrice <= 0 {
+			return nil, ErrDiscountPriceRequired
 		}
 
 		if discounts[i].Percentage < 0 || discounts[i].Percentage > 100 {
@@ -72,30 +77,39 @@ func (s *DiscountService) AddDiscounts(discounts []models.Discount) ([]models.Di
 }
 
 // UpdateDiscounts updates multiple discounts by product ID
-func (s *DiscountService) UpdateDiscounts(discountMap map[string]int) ([]models.Discount, error) {
-	if len(discountMap) == 0 {
+func (s *DiscountService) UpdateDiscounts(discounts []models.Discount) ([]models.Discount, error) {
+	if len(discounts) == 0 {
 		return nil, errors.New("no discounts provided")
 	}
 
 	var updatedDiscounts []models.Discount
 
 	// Update each discount
-	for productID, percentage := range discountMap {
-		if percentage < 0 || percentage > 100 {
+	for _, item := range discounts {
+		if item.ProductID == "" {
+			return nil, ErrDiscountProductRequired
+		}
+
+		if item.DiscountPrice <= 0 {
+			return nil, ErrDiscountPriceRequired
+		}
+
+		if item.Percentage < 0 || item.Percentage > 100 {
 			return nil, ErrDiscountPercentageInvalid
 		}
 
 		// Find discount by product ID
 		var discount models.Discount
-		if err := database.GetDB().Where("product_id = ?", productID).First(&discount).Error; err != nil {
+		if err := database.GetDB().Where("product_id = ?", item.ProductID).First(&discount).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				return nil, ErrDiscountNotFound
 			}
 			return nil, err
 		}
 
-		// Update percentage
-		discount.Percentage = percentage
+		// Update discount fields
+		discount.DiscountPrice = item.DiscountPrice
+		discount.Percentage = item.Percentage
 		if err := database.GetDB().Save(&discount).Error; err != nil {
 			return nil, err
 		}

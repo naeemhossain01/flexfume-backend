@@ -217,7 +217,7 @@ func (s *CouponService) GetCouponUsageStatistics(couponID string) (totalUsage in
 
 	var stats UsageStats
 	err = database.GetDB().Model(&models.CouponUsage{}).
-		Select("COALESCE(SUM(usage_count), 0) as total_usage, COALESCE(SUM(discounted_amount), 0) as total_savings, COUNT(DISTINCT user_id) as unique_users").
+		Select("COUNT(*) as total_usage, 0 as total_savings, COUNT(DISTINCT user_id) as unique_users").
 		Where("coupon_id = ?", couponID).
 		Scan(&stats).Error
 

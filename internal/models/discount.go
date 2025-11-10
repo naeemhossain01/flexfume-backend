@@ -8,10 +8,11 @@ import (
 
 // Discount represents a product discount in the system
 type Discount struct {
-	ID         string         `gorm:"type:uuid;primaryKey;" json:"id"`
-	ProductID  string         `gorm:"type:uuid;not null;uniqueIndex" json:"productId"`
-	Percentage int            `gorm:"not null" json:"percentage"`
-	CreatedAt  time.Time      `json:"createdAt"`
+	ID            string         `gorm:"type:uuid;primaryKey;" json:"id"`
+	ProductID     string         `gorm:"type:uuid;not null;uniqueIndex" json:"productId"`
+	Percentage    int            `json:"percentage,omitempty"`
+	DiscountPrice float64        `gorm:"type:decimal(10,2);not null" json:"discountPrice"`
+	CreatedAt     time.Time      `json:"createdAt"`
 	UpdatedAt  time.Time      `json:"updatedAt"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 	CreatedBy  string         `json:"-"`
@@ -28,22 +29,24 @@ func (Discount) TableName() string {
 
 // DiscountResponse represents the discount data returned in API responses
 type DiscountResponse struct {
-	ID          string           `json:"id"`
-	ProductID   string           `json:"productId,omitempty"`
-	Percentage  int              `json:"percentage"`
-	ProductInfo *ProductResponse `json:"productInfo,omitempty"`
-	CreatedAt   time.Time        `json:"createdAt"`
-	UpdatedAt   time.Time        `json:"updatedAt"`
+	ID            string           `json:"id"`
+	ProductID     string           `json:"productId,omitempty"`
+	Percentage    int              `json:"percentage,omitempty"`
+	DiscountPrice float64          `json:"discountPrice"`
+	ProductInfo   *ProductResponse `json:"productInfo,omitempty"`
+	CreatedAt     time.Time        `json:"createdAt"`
+	UpdatedAt     time.Time        `json:"updatedAt"`
 }
 
 // ToResponse converts a Discount model to DiscountResponse
 func (d *Discount) ToResponse() DiscountResponse {
 	response := DiscountResponse{
-		ID:         d.ID,
-		ProductID:  d.ProductID,
-		Percentage: d.Percentage,
-		CreatedAt:  d.CreatedAt,
-		UpdatedAt:  d.UpdatedAt,
+		ID:            d.ID,
+		ProductID:     d.ProductID,
+		Percentage:    d.Percentage,
+		DiscountPrice: d.DiscountPrice,
+		CreatedAt:     d.CreatedAt,
+		UpdatedAt:     d.UpdatedAt,
 	}
 
 	if d.Product != nil {
