@@ -98,6 +98,10 @@ func (s *ProductService) UpdateProduct(productID string, updatedProduct *models.
 		product.Description = strings.TrimSpace(updatedProduct.Description)
 	}
 
+	if updatedProduct.LongDescription != "" {
+		product.LongDescription = strings.TrimSpace(updatedProduct.LongDescription)
+	}
+
 	if updatedProduct.ImageURL != "" {
 		product.ImageURL = updatedProduct.ImageURL
 	}
