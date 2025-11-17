@@ -29,7 +29,10 @@ func Connect(cfg *config.Config) error {
 	)
 
 	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+	DB, err = gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true, // Disable prepared statements for pgBouncer compatibility
+	}), &gorm.Config{
 		Logger:                 logger.Default.LogMode(logger.Info),
 		PrepareStmt:            false, // Disable prepared statements to avoid "statement name already in use" error
 		SkipDefaultTransaction: true,  // Improve performance by skipping default transactions
@@ -45,10 +48,11 @@ func Connect(cfg *config.Config) error {
 		return fmt.Errorf("failed to get database instance: %w", err)
 	}
 
-	// Set connection pool settings
-	sqlDB.SetMaxIdleConns(10)                  // Maximum number of idle connections
-	sqlDB.SetMaxOpenConns(100)                 // Maximum number of open connections
-	sqlDB.SetConnMaxLifetime(time.Hour * 1)    // Maximum lifetime of a connection (1 hour)
+	// Set connection pool settings optimized for Supabase pgBouncer
+	sqlDB.SetMaxIdleConns(5)                   // Lower idle connections for connection pooler
+	sqlDB.SetMaxOpenConns(20)                  // Lower max connections for pgBouncer compatibility
+	sqlDB.SetConnMaxLifetime(time.Minute * 5)  // Shorter lifetime for pooled connections
+	sqlDB.SetConnMaxIdleTime(time.Minute * 2)  // Close idle connections faster
 
 	log.Println("Database connection established successfully")
 
