@@ -44,7 +44,7 @@ func (h *DeliveryCostHandler) AddCost(c *gin.Context) {
 	deliveryCost := &models.DeliveryCost{
 		Location: req.Location,
 		Service:  req.Service,
-		Cost:     req.Cost,
+		Cost:     *req.Cost,
 	}
 
 	createdCost, err := h.deliveryCostService.AddCost(deliveryCost)
@@ -91,7 +91,7 @@ func (h *DeliveryCostHandler) UpdateCost(c *gin.Context) {
 	deliveryCost := &models.DeliveryCost{
 		Location: req.Location,
 		Service:  req.Service,
-		Cost:     req.Cost,
+		Cost:     *req.Cost,
 	}
 
 	updatedCost, err := h.deliveryCostService.UpdateCost(id, deliveryCost)

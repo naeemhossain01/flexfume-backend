@@ -26,9 +26,9 @@ func (DeliveryCost) TableName() string {
 
 // DeliveryCostRequest represents the request body for creating/updating delivery cost
 type DeliveryCostRequest struct {
-	Location string  `json:"location" binding:"required"`
-	Service  string  `json:"service"`
-	Cost     float64 `json:"cost" binding:"required"`
+	Location string   `json:"location" binding:"required"`
+	Service  string   `json:"service"`
+	Cost     *float64 `json:"cost" binding:"required,gte=0"`
 }
 
 // DeliveryCostInfo represents delivery cost information in responses

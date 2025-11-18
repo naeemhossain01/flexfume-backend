@@ -44,7 +44,7 @@ func (s *DeliveryCostService) UpdateCost(id string, deliveryCost *models.Deliver
 	if deliveryCost.Service != "" {
 		existingCost.Service = deliveryCost.Service
 	}
-	if deliveryCost.Cost > 0 {
+	if deliveryCost.Cost >= 0 {
 		existingCost.Cost = deliveryCost.Cost
 	}
 
